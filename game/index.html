@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ember & Thyme: Bistro Rush</title>
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<canvas id="game" aria-label="Ember and Thyme Bistro Rush cooking game"></canvas>
+<p id="status" role="status" aria-live="polite"></p>
+
+<!-- HUD -->
+<div id="ui-root">
+  <div id="shift-timer">Shift 1/3  1:30</div>
+  <div id="order-board">
+    <div class="order-ticket" style="visibility:hidden">
+      <div class="order-dish"><span class="order-emoji">🍔</span><span class="order-dish-name">Burger</span></div>
+      <div class="order-patience"><div class="order-patience-bar" style="width:100%"></div></div>
+      <div class="order-timer">30s</div>
+    </div>
+  </div>
+  <div id="hud">
+    <div class="hud-item"><span class="hud-label">Score</span><span id="hud-score">0</span></div>
+    <div class="hud-item"><span class="hud-label">Coins</span><span id="hud-coins">0</span></div>
+    <div class="hud-item combo" id="hud-combo" style="display:none">Combo x1</div>
+  </div>
+  <div id="ingredient-bar"></div>
+
+  <!-- Assembly plate -->
+  <div id="assembly-area">
+    <div class="assembly-label">Plate</div>
+    <div class="assembly-plate">
+      <div class="assembly-empty">drag &amp; click ingredients</div>
+    </div>
+  </div>
+
+  <!-- Grill -->
+  <div id="grill-area">
+    <div class="grill-label">Grill</div>
+    <div class="grill-slots">
+      <div class="grill-slot" id="grill-slot-0"></div>
+      <div class="grill-slot" id="grill-slot-1"></div>
+      <div class="grill-slot" id="grill-slot-2"></div>
+    </div>
+    <div class="grill-progress" id="grill-progress"></div>
+  </div>
+
+  <!-- Chop board -->
+  <div id="chop-area">
+    <div class="chop-label">Prep</div>
+    <div class="chop-board" id="chop-board"></div>
+    <div class="chop-progress" id="chop-progress"></div>
+  </div>
+
+  <!-- Serve -->
+  <button id="serve-btn" class="ring-bell">🛎</button>
+
+  <!-- Tooltips -->
+  <div id="tooltip" class="tooltip"></div>
+
+  <div id="particles" class="particles"></div>
+</div>
+
+<!-- Title screen -->
+<div id="title-overlay" class="screen-overlay">
+  <div class="screen-title">
+    <h1>Ember &amp; Thyme</h1>
+    <div class="subtitle">Bistro Rush</div>
+    <div class="controls-hint">
+      Click ingredients on the counter, then <kbd>1-9</kbd> to pick and add them to your plate.<br>
+      Cook patties on the <kbd>Grill</kbd> (don&#8217;t burn them!), chop veg at <kbd>Prep</kbd>, ring the <kbd>bell</kbd> to serve.<br>
+      Orders must match before patience runs out. Rush through 3 shifts!
+    </div>
+    <button id="start-btn" class="screen-btn">Start Shift</button>
+    <button id="mute-btn" class="screen-btn" style="margin-top:10px;padding:8px 20px;font-size:14px">🔊 Music</button>
+  </div>
+</div>
+
+<!-- Pause screen -->
+<div id="pause-overlay" class="screen-overlay hidden">
+  <div class="screen-title">
+    <h1>Paused</h1>
+    <button id="resume-btn" class="screen-btn">Resume</button>
+  </div>
+</div>
+
+<!-- Game over / day summary -->
+<div id="end-overlay" class="screen-overlay hidden">
+  <div class="screen-title">
+    <h1>Shift Complete</h1>
+    <div id="end-score" class="stat-value">0</div>
+    <div class="controls-hint">
+      Day summary: coins earned, best score saved. Ready for the next rush?
+    </div>
+    <div id="end-stats" style="display:flex;gap:24px;justify-content:center;color:#a89884">
+      <div class="stat"><div class="stat-value" id="end-coins">0</div><div class="stat-label">Coins</div></div>
+      <div class="stat"><div class="stat-value" id="end-combo">x1</div><div class="stat-label">Best Combo</div></div>
+      <div class="stat high-score"><div class="stat-value" id="end-best">0</div><div class="stat-label">Best Score</div></div>
+    </div>
+    <button id="restart-btn" class="screen-btn">Next Shift</button>
+  </div>
+</div>
+
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

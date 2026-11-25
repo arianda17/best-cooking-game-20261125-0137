@@ -1,0 +1,92 @@
+html, body { margin: 0; height: 100%; overflow: hidden; background: #1a1815; font-family: 'Segoe UI', system-ui, sans-serif; }
+#game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+#status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+#ui-root { position: fixed; inset: 0; pointer-events: none; user-select: none; }
+.panel { pointer-events: auto; }
+#order-board { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 10; }
+.order-ticket { background: #2a2622; border: 2px solid #c9a962; border-radius: 6px; padding: 6px 10px; min-width: 120px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+.order-dish { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #f5e8d0; font-weight: 600; }
+.order-dish-name { text-transform: capitalize; }
+.order-patience { height: 4px; background: #3a342e; border-radius: 2px; margin-top: 4px; overflow: hidden; }
+.order-patience-bar { height: 100%; background: linear-gradient(90deg, #4ade80, #fbbf24, #ef4444); transition: width 0.1s; }
+.order-timer { font-size: 10px; color: #a89884; text-align: right; margin-top: 2px; }
+
+#hud { position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; gap: 8px; z-index: 10; }
+.hud-item { background: rgba(26,24,21,0.9); border: 1px solid #c9a962; border-radius: 6px; padding: 6px 12px; color: #f5e8d0; font-size: 14px; font-weight: 600; min-width: 100px; text-align: right; }
+.hud-label { color: #a89884; font-size: 11px; font-weight: 400; margin-right: 6px; }
+.combo { animation: comboPulse 0.3s ease; }
+@keyframes comboPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+#shift-timer { position: absolute; top: 12px; left: 12px; background: rgba(26,24,21,0.9); border: 2px solid #c9a962; border-radius: 8px; padding: 8px 16px; color: #f5e8d0; font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; z-index: 10; }
+#shift-timer.warning { border-color: #ef4444; color: #ef4444; animation: timerFlash 0.5s infinite; }
+@keyframes timerFlash { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+#ingredient-bar { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 10; }
+.ing-btn { width: 56px; height: 56px; background: #2a2622; border: 2px solid #3a342e; border-radius: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: #f5e8d0; font-size: 10px; text-transform: capitalize; transition: all 0.1s; pointer-events: auto; }
+.ing-btn:hover, .ing-btn.selected { border-color: #c9a962; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(201,169,98,0.4); }
+.ing-btn:active { transform: translateY(0); }
+.ing-key { color: #887864; font-size: 9px; font-weight: 700; }
+.ing-icon { width: 28px; height: 28px; display: block; }
+
+#assembly-area { position: absolute; bottom: 80px; right: 12px; width: 120px; height: 120px; background: #2a2622; border: 2px dashed #4a4238; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding: 8px; gap: 2px; z-index: 10; pointer-events: auto; }
+.assembly-label { color: #887864; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+.assembly-plate { width: 90px; height: 90px; background: radial-gradient(circle at 45% 45%, #f5e8d0 0%, #e8dcc8 100%); border-radius: 50%; border: 3px solid #c9a962; box-shadow: inset 0 -4px 8px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
+.assembly-layer { position: absolute; left: 50%; transform: translateX(-50%); bottom: var(--y, 0); }
+.assembly-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #a89884; font-size: 10px; text-align: center; pointer-events: none; }
+
+#grill-area { position: absolute; bottom: 80px; left: 12px; width: 140px; height: 120px; background: #1a1612; border: 2px solid #3a3028; border-radius: 10px; display: flex; flex-direction: column; align-items: center; padding: 8px; gap: 4px; z-index: 10; pointer-events: auto; }
+.grill-label { color: #887864; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+.grill-slots { display: flex; gap: 6px; }
+.grill-slot { width: 56px; height: 56px; background: #25201a; border: 2px solid #3a3028; border-radius: 6px; position: relative; display: flex; align-items: center; justify-content: center; }
+.grill-slot.cooking { border-color: #ef4444; box-shadow: 0 0 12px rgba(239,68,68,0.4); }
+.grill-slot.burnt { border-color: #3a2010; background: #1a0a05; }
+.grill-progress { position: absolute; bottom: 0; left: 0; height: 4px; background: linear-gradient(90deg, #fbbf24, #ef4444); border-radius: 0 0 4px 4px; transform-origin: left; transform: scaleX(0); transition: transform 0.1s; }
+.grill-item { pointer-events: none; }
+
+#chop-area { position: absolute; bottom: 80px; left: calc(50% - 70px); width: 140px; height: 120px; background: #1a1612; border: 2px solid #3a3028; border-radius: 10px; display: flex; flex-direction: column; align-items: center; padding: 8px; gap: 4px; z-index: 10; pointer-events: auto; }
+.chop-label { color: #887864; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+.chop-board { width: 110px; height: 80px; background: linear-gradient(135deg, #8b6f4a 0%, #6b5238 100%); border-radius: 6px; border: 2px solid #5a3d28; position: relative; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
+.chop-item { position: absolute; }
+.chop-progress { position: absolute; bottom: 0; left: 0; height: 4px; background: #4ade80; border-radius: 0 0 4px 4px; transform-origin: left; transform: scaleX(0); transition: transform 0.1s; }
+.chop-ready { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #4ade80; font-size: 12px; font-weight: 700; pointer-events: none; }
+
+#serve-btn { position: absolute; bottom: 12px; right: 12px; width: 72px; height: 72px; background: radial-gradient(circle at 30% 30%, #fbbf24, #f59e0b); border: 3px solid #c9a962; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 28px; color: #1a1612; box-shadow: 0 6px 20px rgba(245,158,11,0.5), inset 0 -4px 8px rgba(0,0,0,0.2); transition: all 0.1s; pointer-events: auto; z-index: 10; }
+#serve-btn:hover:not(:disabled) { transform: scale(1.08); box-shadow: 0 8px 28px rgba(245,158,11,0.7); }
+#serve-btn:active:not(:disabled) { transform: scale(0.95); }
+#serve-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+#serve-btn.ready { animation: servePulse 1s infinite; }
+@keyframes servePulse { 0%, 100% { box-shadow: 0 6px 20px rgba(245,158,11,0.5), inset 0 -4px 8px rgba(0,0,0,0.2); } 50% { box-shadow: 0 6px 30px rgba(245,158,11,0.8), 0 0 40px rgba(245,158,11,0.5), inset 0 -4px 8px rgba(0,0,0,0.2); } }
+
+.screen-overlay { position: fixed; inset: 0; background: rgba(10,8,6,0.92); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; z-index: 100; pointer-events: auto; }
+.screen-overlay.hidden { display: none; }
+.screen-title { color: #f5e8d0; text-align: center; }
+.screen-title h1 { font-size: 48px; margin: 0 0 8px; background: linear-gradient(180deg, #f5e8d0, #c9a962); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 4px 24px rgba(201,169,98,0.3); }
+.screen-title .subtitle { color: #a89884; font-size: 18px; font-weight: 400; margin-bottom: 16px; }
+.screen-btn { background: linear-gradient(180deg, #c9a962, #a88d4a); border: none; border-radius: 8px; padding: 14px 36px; color: #1a1612; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.1s; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 16px rgba(201,169,98,0.4); }
+.screen-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(201,169,98,0.6); }
+.screen-btn:active { transform: translateY(0); }
+.controls-hint { color: #887864; font-size: 13px; line-height: 2; text-align: left; max-width: 400px; }
+.controls-hint kbd { background: #2a2622; border: 1px solid #3a342e; border-radius: 4px; padding: 2px 8px; font-family: monospace; color: #c9a962; margin: 0 4px; }
+
+#end-screen .stats { display: flex; gap: 24px; margin-top: 16px; }
+.stat { text-align: center; }
+.stat-value { font-size: 36px; font-weight: 700; color: #f5e8d0; }
+.stat-label { color: #887864; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+.high-score { color: #c9a962; }
+
+.tooltip { position: absolute; background: #1a1612; border: 1px solid #c9a962; border-radius: 6px; padding: 6px 10px; color: #f5e8d0; font-size: 12px; pointer-events: none; z-index: 200; white-space: nowrap; opacity: 0; transition: opacity 0.15s; }
+.tooltip.show { opacity: 1; }
+
+.coin-popup { position: absolute; color: #fbbf24; font-weight: 700; font-size: 18px; pointer-events: none; z-index: 50; animation: coinFloat 1s ease-out forwards; }
+@keyframes coinFloat { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-60px) scale(1.3); } }
+.combo-popup { position: absolute; color: #f59e0b; font-weight: 800; font-size: 22px; pointer-events: none; z-index: 50; animation: comboFloat 0.8s ease-out forwards; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+@keyframes comboFloat { 0% { opacity: 1; transform: translateY(0) scale(1); } 50% { transform: scale(1.2); } 100% { opacity: 0; transform: translateY(-40px) scale(1); } }
+
+.customer-emote { position: absolute; width: 48px; height: 48px; pointer-events: none; z-index: 5; transition: transform 0.2s; }
+.customer-emote.happy { filter: drop-shadow(0 0 6px #4ade80); }
+.customer-emote.impatient { filter: drop-shadow(0 0 6px #fbbf24); animation: impatientShake 0.5s infinite; }
+.customer-emote.angry { filter: drop-shadow(0 0 6px #ef4444); }
+@keyframes impatientShake { 0%, 100% { transform: translateX(-2px); } 50% { transform: translateX(2px); } }
+
+.particles { position: absolute; inset: 0; pointer-events: none; z-index: 30; }
