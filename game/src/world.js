@@ -17,7 +17,7 @@ const PATIENCE_BASE = { 0: 30, 1: 24, 2: 18 }; // seconds
 const ORDER_SPAWN = { 0: 12, 1: 9, 2: 7 }; // seconds between orders
 
 const COOK_TIME = 3.0; // patty cook time
-const BURN_TIME = 5.5; // patty burn time
+export const BURN_TIME = 5.5; // patty burn time
 const CHOP_CLICKS = 6; // rapid clicks to chop
 
 export class World {
@@ -210,11 +210,10 @@ export class World {
     if (this.state !== SCREEN_PLAY) return;
     const mode = this._autoMode || 'play';
     let a = this._auto;
-    if (!a) a = this._auto = { phase: 0, wait: 0 };
+    if (!a) a = this._auto = { phase: 0, wait: 0, served: 0 };
     if (a.wait > 0) { a.wait -= dt; return; }
 
     const KEY = { bun: 'Digit1', patty: 'Digit2', cheese: 'Digit3', lettuce: 'Digit4', tomato: 'Digit5' };
-    const slot = this.grill[0];
 
     switch (a.phase) {
       case 0: // bottom bun on the plate
@@ -229,13 +228,16 @@ export class World {
         a.wait = 0.05;
         break;
       case 2: // wait for the patty to cook (take it before it burns)
-        if (slot && slot.key === 'patty' && !slot.burning && slot.cooked >= COOK_TIME) {
-          a.phase = 3;
-        } else if (slot && slot.burning) {
-          this.grill[0] = null;
-          a.phase = 1;
-        } else {
-          a.wait = 0.1;
+        {
+          const slot = this.grill[0];
+          if (slot && slot.key === 'patty' && !slot.burning && slot.cooked >= COOK_TIME) {
+            a.phase = 3;
+          } else if (slot && slot.burning) {
+            this.grill[0] = null;
+            a.phase = 1;
+          } else {
+            a.wait = 0.1;
+          }
         }
         break;
       case 3: // cooked patty onto the plate
@@ -263,11 +265,19 @@ export class World {
         this.addToPlate();
         a.phase = 8;
         break;
-      case 8: // full plate: end shot serves and repeats; serve shot holds ready
+      case 8: // full plate: end shot serves and repeats; serve shot serves one then holds one ready
         if (mode === 'end' && this.serveReady) {
           this.serve();
           a.phase = 0;
           a.wait = 0.05;
+        } else if (mode === 'serve' && this.serveReady) {
+          if (a.served < 1) { // serve one dish so score > 0, then hold next ready
+            this.serve();
+            a.served++;
+            a.phase = 0;
+            a.wait = 0.05;
+          }
+          // else: hold the ready plate (don't serve)
         }
         break;
       case 9: // play shot: hold the mid-assembly plate
@@ -366,7 +376,7 @@ export class World {
   clickGrillSlot(index) {
     if (index < 0 || index >= this.grill.length) return;
     const slot = this.grill[index];
-    if (!slot) {
+    if (!slot || !slot.key) {
       // Place raw patty if selected
       if (this.selectedIngredient === 'patty') {
         this.grill[index] = { key: 'patty', cooked: 0, burning: false };

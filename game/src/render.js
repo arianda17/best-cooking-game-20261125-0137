@@ -3,6 +3,7 @@
 
 import { lerp, clamp, dist } from './math.js';
 import { ingredientByKey } from './recipes.js';
+import { BURN_TIME } from './world.js';
 
 let ctx = null;
 let width = 1280;

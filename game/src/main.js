@@ -23,6 +23,7 @@ let started = false;
 function init() {
   initCanvas(canvas);
   world = new World(width, height, seed);
+  window.world = world;
   setupUI();
   setupInput(world, canvas,
     () => { if (world.getState() === World.SCREEN_PLAY) serve(); },
@@ -45,6 +46,10 @@ function init() {
       hidePause();
       if (shotName === 'end') showEnd();
     }
+    // Render the staged frame immediately so headless screenshots capture it
+    // (rAF may not fire under virtual-time budget in headless mode)
+    renderFrame();
+    refreshUI();
   } else {
     showTitle();
   }
@@ -218,6 +223,23 @@ function refreshUI() {
     const chop = world.getChop();
     chopEl.style.transform = `scaleX(${Math.min(chop.clicks / 6, 1)})`;
   }
+
+  // HTML assembly plate: mirror world plate so the overlay shows food
+  const assemblyPlate = document.querySelector('.assembly-plate');
+  if (assemblyPlate) {
+    const plate = world.getPlate();
+    assemblyPlate.querySelectorAll('.assembly-layer').forEach((el) => el.remove());
+    const empty = assemblyPlate.querySelector('.assembly-empty');
+    if (empty) empty.style.display = plate.length === 0 ? 'flex' : 'none';
+    plate.forEach((item, i) => {
+      const ing = INGREDIENTS.find((ing) => ing.key === item.key);
+      if (!ing) return;
+      const layer = document.createElement('div');
+      layer.className = 'assembly-layer';
+      layer.style.cssText = `width:52px;height:${item.key === 'patty' ? 9 : 7}px;background:${ing.color};border-radius:4px;bottom:${i * 10}px;`;
+      assemblyPlate.appendChild(layer);
+    });
+  }
 }
 
 function loop(ts) {
@@ -247,7 +269,6 @@ function renderFrame() {
   drawUI(world);
 }
 
-window.world = world;
 document.addEventListener('DOMContentLoaded', init);
 
 // Handle keyboard ingredient select (1-9)

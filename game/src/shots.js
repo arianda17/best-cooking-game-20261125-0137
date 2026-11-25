@@ -10,6 +10,8 @@ export const SCREEN_SERVE = 'serve';
 
 export function stageShot(name, world) {
   world.reset();
+  world._auto = null;
+  world._autoMode = name;
   if (name === 'start' || name === 'title') {
     world.state = SCREEN_TITLE;
     return { screen: SCREEN_TITLE, best: world.getBestScore() };
